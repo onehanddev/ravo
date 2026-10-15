@@ -39,7 +39,17 @@ export async function downloadReceipt(state, jobId) {
   const { job, rows } = receipt(state, jobId);
   const { jsPDF } = await import("jspdf");
   const pdf = new jsPDF();
-  let y = 24;
+  pdf.setProperties({ title: `${job.number} · Production receipt`, author: "Ravo", creator: "Ravo · Production in flow" });
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(16);
+  pdf.setTextColor(37, 99, 235);
+  pdf.text("Ravo", 18, 20);
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(10);
+  pdf.setTextColor(100, 116, 139);
+  pdf.text("Production in flow", 38, 20);
+  pdf.setTextColor(15, 23, 42);
+  let y = 34;
   const page = () => { pdf.addPage(); y = 22; };
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(20);
@@ -69,7 +79,7 @@ export async function downloadReceipt(state, jobId) {
   for (let index = 1; index <= count; index += 1) {
     pdf.setPage(index);
     pdf.setFontSize(9);
-    pdf.text(`${job.number} / Page ${index} of ${count}`, 18, 288);
+    pdf.text(`Ravo / ${job.number} / Page ${index} of ${count}`, 18, 288);
   }
   pdf.save(`${job.number}-production-receipt.pdf`);
 }
@@ -79,16 +89,18 @@ export function printReceipt(state, jobId) {
   const popup = window.open("", "_blank");
   if (!popup) throw new Error("Allow the print window in your browser, or download the PDF instead.");
   popup.opener = null;
-  popup.document.title = `${job.number} · Production receipt`;
+  popup.document.title = `${job.number} · Production receipt · Ravo`;
   const style = popup.document.createElement("style");
   style.textContent = "body{font:14px system-ui,sans-serif;max-width:780px;margin:32px auto;padding:0 20px;color:#172026}h1{font-size:26px}dl{margin:20px 0}dl>div{border-bottom:1px solid #ddd;padding:10px 0;break-inside:avoid}dt{font-weight:700}dd{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}p{color:#45554d}@page{margin:18mm}@media print{button{display:none}body{margin:0;padding:0}}";
   popup.document.head.append(style);
+  const brand = popup.document.createElement("p");
+  brand.textContent = "Ravo · Production in flow";
   const heading = popup.document.createElement("h1");
   heading.textContent = "Production receipt";
   const print = popup.document.createElement("button");
   print.textContent = "Print receipt";
   print.onclick = () => popup.print();
-  popup.document.body.append(heading, print);
+  popup.document.body.append(brand, heading, print);
   const list = popup.document.createElement("dl");
   rows.forEach(([label, value]) => {
     const row = popup.document.createElement("div");

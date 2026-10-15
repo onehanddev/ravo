@@ -1,5 +1,6 @@
 {
-  "name": "mrp-monitor-prototype",
+  "name": "ravo",
+  "description": "Ravo — Production in flow. Packaging factory jobs, queues, and dispatch.",
   "private": true,
   "version": "0.0.0",
   "type": "module",

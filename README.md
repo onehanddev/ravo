@@ -1,6 +1,8 @@
-# Packaging Factory Monitor
+# Ravo
 
-A React/Vite demonstration of packaging production, from reusable product configuration to machine queues, dispatch and PDF production receipts. Data is retained in **localStorage in the same browser and origin**. The future real application's shared server storage is outside this prototype.
+**Production in flow.** Ravo is a React/Vite application for packaging production, from reusable product configuration to department views, machine queues, dispatch and PDF production receipts. Data is retained in **localStorage in the same browser and origin**. Shared server storage is outside the current scope.
+
+The project directory and npm package are named `ravo`. Reusable brand assets live in `public/ravo-logo.svg` (full logo) and `public/ravo-mark.svg` (icon).
 
 ## Run
 
@@ -41,7 +43,7 @@ npm run build
 ## Extend the application
 
 - [Domain glossary](CONTEXT.md)
-- [Consolidated specification](docs/end-to-end-prototype-spec.md)
+- [Consolidated specification](docs/ravo-spec.md)
 - [Module architecture and change guide](docs/architecture.md)
 - [Public interface and state contract](docs/module-contract.md)
 - [Discovery decisions](docs/configuration-discovery.md)

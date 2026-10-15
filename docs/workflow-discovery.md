@@ -1,10 +1,10 @@
-# Packaging Factory Workflow Discovery
+# Ravo: Factory Workflow Discovery
 
 ## Status
 
 Discovery interview started on 2026-10-13. Answers Q1–Q13 are recorded below as the initial baseline. [configuration-discovery.md](configuration-discovery.md) records Q14–Q29 and takes precedence where later answers revise that baseline: optional product machine defaults, constrained owner corrections, retained job specifications, entered sheet yield, explicit dispatch confirmation, PDF receipts, and shared server-side persistence. Recommendations and unanswered questions are not accepted requirements.
 
-**Latest scope correction:** the user subsequently chose localStorage for the demonstration prototype. Shared server-side persistence applies to the future real app. See [end-to-end-prototype-spec.md](end-to-end-prototype-spec.md) for the consolidated current scope; it takes precedence over historical interview answers.
+**Latest scope correction:** the user subsequently chose localStorage for the demonstration prototype. Shared server-side persistence applies to the future real app. See [ravo-spec.md](ravo-spec.md) for the consolidated current scope; it takes precedence over historical interview answers.
 
 **Implementation follow-up:** machines must expose future assigned **Incoming work** before upstream completion, separately from their executable queues. Completion Undo must be visible from job details and the source machine's expanded details. These additions are specified in the consolidated spec and configuration discovery document.
 

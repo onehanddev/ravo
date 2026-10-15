@@ -1,4 +1,4 @@
-# Manufacturing prototype architecture
+# Ravo architecture
 
 ## The main rule
 

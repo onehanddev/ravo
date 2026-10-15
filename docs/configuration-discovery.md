@@ -1,8 +1,8 @@
-# Product Configuration and Job Workflow Discovery
+# Ravo: Product Configuration and Job Workflow Discovery
 
 This extends [workflow-discovery.md](workflow-discovery.md) and records accepted answers Q14–Q29. The calculation and dispatch questions below are resolved. Implementation choices and detailed form rules not explicitly agreed remain unspecified. Application behavior has not been changed.
 
-The subsequent specification request explicitly replaces server-side persistence with localStorage for this demonstration prototype. The consolidated implementation scope is [end-to-end-prototype-spec.md](end-to-end-prototype-spec.md); cross-device server persistence remains a requirement for the future real application.
+The subsequent specification request explicitly replaces server-side persistence with localStorage for this demonstration prototype. The consolidated implementation scope is [ravo-spec.md](ravo-spec.md); cross-device server persistence remains a requirement for the future real application.
 
 ## Confirmed requirements from the walkthrough
 

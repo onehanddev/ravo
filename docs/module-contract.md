@@ -1,6 +1,6 @@
-# Manufacturing module contract
+# Ravo module contract
 
-Implemented public interfaces for the end-to-end prototype. The domain glossary and end-to-end spec define the product behavior. See [architecture.md](architecture.md) for module ownership and extension guidance.
+Implemented public interfaces for Ravo. The domain glossary and end-to-end spec define the product behavior. See [architecture.md](architecture.md) for module ownership and extension guidance.
 
 ## Shared state
 

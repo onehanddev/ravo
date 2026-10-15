@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 64" fill="none">
+  <title>Ravo</title>
+  <rect width="64" height="64" rx="16" fill="#2563eb"/>
+  <path d="M19 46V18H32C47 18 47 34 32 34H26L45 46M45 36V46H35" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#0f172a">
+    <path d="M82 47V17H96C112 17 112 35 101 36L112 47H102L92 36H90V47ZM90 24V30H96C102 30 102 24 96 24Z" fill-rule="evenodd"/>
+    <path d="M133 25H141V47H133V44C130 49 115 50 115 36C115 22 130 21 133 27ZM128 31C121 31 121 41 128 41C135 41 135 31 128 31Z" fill-rule="evenodd"/>
+    <path d="M146 25H154L160 40L166 25H174L164 47H156Z"/>
+    <path d="M191 24C209 24 209 48 191 48C173 48 173 24 191 24ZM191 31C183 31 183 41 191 41C199 41 199 31 191 31Z" fill-rule="evenodd"/>
+  </g>
+</svg>

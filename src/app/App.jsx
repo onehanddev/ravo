@@ -50,6 +50,7 @@ export function App() {
   if (factory.loadError) return <main className="app-shell"><section className="feature-panel storage-error"><h1>Factory data could not be loaded</h1><p role="alert">{factory.loadError}</p><button className="primary-button" onClick={() => window.location.reload()}>Retry loading</button></section></main>;
   const state = factory.state;
   return <main className="app-shell">
+    <div className="ravo-brand"><img src="/ravo-logo.svg" width="130" height="40" alt="Ravo" /><span>Production in flow</span></div>
     <header className="topbar"><div><p className="eyebrow">Packaging factory / {owner ? "Owner workspace" : "Floor operations"}</p><h1>{tab.heading}</h1></div><div className="header-actions">{owner && <button className="primary-button new-job-button" onClick={() => setJobForm({})}><Plus size={19} />New job</button>}</div></header>
     <div className="monitor-toolbar"><nav className="view-tabs" aria-label="Factory views">{tabs.map(({ id, title, icon: Icon }) => <button key={id} className={view === id ? "active" : ""} aria-label={title} aria-current={view === id ? "page" : undefined} onClick={() => navigate(id)}><Icon size={18} />{title}{id === "dispatch" && state.jobs.some((job) => job.status === "ready-for-dispatch") && <span className="tab-count" aria-hidden="true">{state.jobs.filter((job) => job.status === "ready-for-dispatch").length}</span>}</button>)}</nav></div>
     <div className="save-status" role="status" aria-live="polite">{factory.message || "Configuration, jobs and history are retained locally."}</div>

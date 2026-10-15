@@ -1,4 +1,4 @@
-# Packaging Factory: End-to-End Manufacturing Prototype
+# Ravo: End-to-End Manufacturing Specification
 
 ## Problem Statement
 
