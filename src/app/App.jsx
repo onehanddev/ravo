@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { Factory, ListChecks, Plus, Settings2, Truck, X } from "lucide-react";
+import { Factory, Layers, ListChecks, Plus, Settings2, Truck, X } from "lucide-react";
 import { useFactory } from "./useFactory.js";
 import { ConfigurationView } from "../configuration/index.jsx";
 import { JobForm } from "../jobs/JobForm.jsx";
 import { JobDetails } from "../jobs/JobDetails.jsx";
 import { MachinesView, WorkstationView } from "../production/index.jsx";
+import { DepartmentsView } from "../production/DepartmentsView.jsx";
 import { MachineHistoryDialog } from "../production/History.jsx";
 import { DispatchView } from "../dispatch/index.jsx";
 
 const tabs = [
   { id: "machines", title: "Machines", heading: "Machine floor", icon: Factory },
+  { id: "departments", title: "Departments", heading: "Department jobs", icon: Layers },
   { id: "workstation", title: "Workstation", heading: "Workstation", icon: ListChecks },
   { id: "configuration", title: "Configuration", heading: "Factory configuration", icon: Settings2 },
   { id: "dispatch", title: "Dispatch & history", heading: "Dispatch & finished jobs", icon: Truck },
@@ -53,6 +55,7 @@ export function App() {
     <div className="save-status" role="status" aria-live="polite">{factory.message || "Configuration, jobs and history are retained locally."}</div>
     {factory.error && <div className="global-error" role="alert"><span>{factory.error}</span><button className="icon-button" aria-label="Dismiss error" onClick={factory.dismissError}><X size={18} /></button></div>}
     {view === "machines" && <MachinesView state={state} onCommand={command} onOpenJob={onOpenJob} onMachineHistory={setHistoryMachine} onConfigure={() => navigate("configuration")} onNewJob={() => setJobForm({})} />}
+    {view === "departments" && <DepartmentsView state={state} onCommand={command} onOpenJob={onOpenJob} />}
     {view === "workstation" && <WorkstationView state={state} onCommand={command} onOpenJob={onOpenJob} role={role} onRoleChange={setRole} />}
     {view === "configuration" && <ConfigurationView state={state} onCommand={command} onMachineHistory={setHistoryMachine} />}
     {view === "dispatch" && <DispatchView state={state} onCommand={command} onOpenJob={onOpenJob} />}

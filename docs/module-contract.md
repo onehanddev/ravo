@@ -20,9 +20,11 @@ Implemented public interfaces for the end-to-end prototype. The domain glossary 
 - `validateState(state)` verifies the version, shapes, references, retained designs, calculations and execution/queue invariants when loading, saving and executing commands. Invalid data throws and is not overwritten.
 - `applyCommand(state, command, { actor = 'owner', now = ISO timestamp } = {})` returns a new valid state or throws an Error with a user-facing message. It never mutates its input, reads browser storage, or calls React. IDs use UUIDs; job numbers use a retained monotonic sequence or the entire retained job collection.
 - `calculateSheets({ quantity, boxesPerSheet, sheet, standardSheet })` returns `{ requiredSheets, boxCapacity, multiplier }`, throwing for invalid inputs.
+- `suggestBoxesPerSheet({ boxesPerStandardSheet, sheet, standardSheet })` returns an area-scaled whole-yield estimate (or `null` for incomplete sizes) for job-entry assistance only; it never throws and never overrides entered values. `areaRatio(...)` returns the numeric ratio; `formatAreaRatio(...)` returns it as text (e.g. `4×`).
 - `getMachineView(state, machineId)` returns `{ machine, status, currentJob, currentOperation, waitingJobs }`; status is running/ready/idle/maintenance/retired.
 - `getJobStatus(job)` returns running/ready/waiting/ready-for-dispatch/dispatched.
-- `getIncomingWork(state, machineId)` returns `[{ job, operation, currentOperation, operationsBeforeArrival }]` for future pending assignments. This read-only projection must never insert downstream work into executable queues.
+- `getIncomingWork(state, machineId)` returns `[{ job, operation, currentOperation, operationsBeforeArrival, upstreamPosition }]` for future pending assignments, ordered by arrival: closest arrival first, running work before queued work, then upstream machine queue priority. This read-only projection must never insert downstream work into executable queues.
+- `getDepartmentView(state, processId)` returns `{ machines, queued, running, completed, incoming }` grouped by the job's current operation; its incoming projection shares the arrival ordering and upstream positions above.
 - `getUndoReason(state, eventId)` returns `null` when eligible, otherwise an explanation. It includes downstream and source-machine dependencies.
 
 Commands:

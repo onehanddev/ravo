@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react";
 import { CheckCircle2, Factory, History, Play } from "lucide-react";
-import { getMachineView } from "../domain/index.js";
+import { getIncomingWork, getMachineView } from "../domain/index.js";
 import { JobLink, StatusPill, SheetFacts, Field } from "../ui/index.jsx";
 import { MachineQueue } from "./MachineQueue.jsx";
 import { IncomingWork } from "./IncomingWork.jsx";
@@ -60,16 +60,19 @@ export function WorkstationView({ state, onCommand, onOpenJob, role, onRoleChang
   const views = state.machines.filter((machine) => machine.processId === department && !machine.retired).map((machine) => getMachineView(state, machine.id));
   return <section className="workstation-operations">
     <header className="operations-heading"><div className="department-picker"><Field label="Department"><select value={department} onChange={(event) => setDepartment(event.target.value)}>{state.processes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Field label="Workstation role"><select value={role} onChange={(event) => onRoleChange(event.target.value)}><option value="worker">Worker · start / complete</option><option value="supervisor">Supervisor · queue priority</option></select></Field></div><dl className="workstation-summary"><div><dt>Machines</dt><dd>{views.length}</dd></div><div className="summary-running"><dt>Running</dt><dd>{views.filter((view) => view.status === "running").length}</dd></div><div><dt>Waiting</dt><dd>{views.reduce((sum, view) => sum + view.waitingJobs.length, 0)}</dd></div></dl></header>
-    <div className="workstation-units">{views.map((view) => <Fragment key={view.machine.id}>
+    <div className="workstation-units">{views.map((view) => {
+      const incomingCount = getIncomingWork(state, view.machine.id).length;
+      return <Fragment key={view.machine.id}>
       <section className={`workstation-unit worker-${view.status}`} aria-label={view.machine.name}>
         <header className="workstation-identity"><h3><button className="machine-name-button" aria-label={`View ${view.machine.name} planning`} aria-expanded={queue === view.machine.id} onClick={() => setQueue(queue === view.machine.id ? null : view.machine.id)}>{view.machine.name}</button></h3></header>
         <div className="workstation-current"><span className="operation-label">{view.status === "ready" ? "Next job · ready to start" : "Current job"}</span>{view.currentJob ? <><JobLink job={view.currentJob} onOpen={onOpenJob} /><p>{view.currentJob.specification.name}</p><NextStep state={state} job={view.currentJob} /></> : <p>{view.status === "maintenance" ? "Unavailable for assignment" : "Available for the next job"}</p>}</div>
         <div className="workstation-process"><StatusPill status={view.status} /></div><div className="workstation-action"><OperationAction view={view} onCommand={onCommand} worker /></div>
         {process.name === "Corrugation" && view.currentJob && <section className="corrugation-facts"><h3>Corrugation sheet requirement</h3><SheetFacts job={view.currentJob} /></section>}
-        <button className="ghost-button small workstation-queue-toggle" aria-expanded={queue === view.machine.id} onClick={() => setQueue(queue === view.machine.id ? null : view.machine.id)}>Queue & incoming work · {view.waitingJobs.length} waiting</button>
+        <button className="ghost-button small workstation-queue-toggle" aria-expanded={queue === view.machine.id} onClick={() => setQueue(queue === view.machine.id ? null : view.machine.id)}>Queue & incoming work · {view.waitingJobs.length} waiting · {incomingCount} incoming</button>
       </section>
       {queue === view.machine.id && <div className="queue-panel"><MachineQueue state={state} machine={view.machine} onCommand={onCommand} onOpenJob={onOpenJob} canReorder={role === "supervisor"} /><IncomingWork state={state} machine={view.machine} onOpenJob={onOpenJob} /></div>}
-    </Fragment>)}</div>
+      </Fragment>;
+    })}</div>
     {!views.length && <p className="empty-state">No active machines in this department. Ask the owner to configure a machine.</p>}
   </section>;
 }

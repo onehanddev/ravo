@@ -48,7 +48,7 @@ The actual sheet dimensions selected for an individual production job, which may
 The number of boxes produced from one sheet of the product's standard sheet size.
 
 **Actual boxes per sheet**:
-The job-specific number of boxes produced from one actual job sheet, supplied during job entry and used to calculate required sheets.
+The job-specific number of boxes produced from one actual job sheet, supplied during job entry and used to calculate required sheets. Job entry may suggest an area-scaled estimate when the job sheet size changes; the entered value remains authoritative.
 
 **Required sheets**:
 The minimum whole-sheet quantity needed for a job's ordered box quantity at its entered actual boxes-per-sheet yield. This is a calculated requirement, not measured material consumption.

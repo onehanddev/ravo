@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { applyCommand, calculateSheets, createInitialState, getJobStatus, getMachineView, getUndoReason } from "../../src/domain/index.js";
+import { applyCommand, areaRatio, calculateSheets, createInitialState, formatAreaRatio, getDepartmentView, getIncomingWork, getJobStatus, getMachineView, getUndoReason, suggestBoxesPerSheet } from "../../src/domain/index.js";
 
 const now = "2026-10-13T10:00:00.000Z";
 
@@ -79,6 +79,28 @@ test("sheet yield is authoritative, whole sheets round upward, invalid arithmeti
   assert.throws(() => calculateSheets({ ...input, quantity: 1, boxesPerSheet: 1, sheet: { reelSize: Number.MAX_VALUE, cuttingSize: 2 } }), /range/);
 });
 
+test("sheet scaling suggests a whole yield estimate without overriding entered values", () => {
+  const standardSheet = { reelSize: 18, cuttingSize: 36 };
+  // Doubling both dimensions quadruples the area: 4 per sheet suggests 16.
+  assert.equal(suggestBoxesPerSheet({ boxesPerStandardSheet: 4, sheet: { reelSize: 36, cuttingSize: 72 }, standardSheet }), 16);
+  // Same size suggests the standard yield unchanged.
+  assert.equal(suggestBoxesPerSheet({ boxesPerStandardSheet: 4, sheet: { reelSize: 18, cuttingSize: 36 }, standardSheet }), 4);
+  // Shrinking halves the estimate; fractional estimates round to a whole sheet yield.
+  assert.equal(suggestBoxesPerSheet({ boxesPerStandardSheet: 4, sheet: { reelSize: 9, cuttingSize: 36 }, standardSheet }), 2);
+  assert.equal(suggestBoxesPerSheet({ boxesPerStandardSheet: 4, sheet: { reelSize: 20, cuttingSize: 36 }, standardSheet }), 4);
+  // A yield below one sheet still suggests a single box rather than zero.
+  assert.equal(suggestBoxesPerSheet({ boxesPerStandardSheet: 1, sheet: { reelSize: 9, cuttingSize: 18 }, standardSheet }), 1);
+  // Incomplete or invalid sizes yield no suggestion instead of throwing.
+  for (const sheet of [{ reelSize: "", cuttingSize: 36 }, { reelSize: 0, cuttingSize: 36 }, { reelSize: -5, cuttingSize: 36 }, null, undefined]) {
+    assert.equal(suggestBoxesPerSheet({ boxesPerStandardSheet: 4, sheet, standardSheet }), null);
+  }
+  assert.equal(suggestBoxesPerSheet({ boxesPerStandardSheet: 0, sheet: { reelSize: 36, cuttingSize: 72 }, standardSheet }), null);
+  assert.equal(areaRatio({ sheet: { reelSize: 36, cuttingSize: 72 }, standardSheet }), 4);
+  assert.equal(formatAreaRatio({ sheet: { reelSize: 36, cuttingSize: 72 }, standardSheet }), "4×");
+  assert.equal(formatAreaRatio({ sheet: { reelSize: 20, cuttingSize: 36 }, standardSheet }), "1.11×");
+  assert.equal(formatAreaRatio({ sheet: { reelSize: "", cuttingSize: 36 }, standardSheet }), null);
+});
+
 test("public commands are immutable, atomic, serializable and revisioned", () => {
   const state = freeze(createInitialState());
   const input = freeze({ type: "job.create", productId: state.products[0].id, quantity: 10, boxesPerSheet: 4, sheet: { reelSize: 50, cuttingSize: 40 }, assignments: state.products[0].route.map((step) => step.machineId) });
@@ -146,6 +168,24 @@ test("queue reprioritization changes ready head, never displaces running work or
   assert.equal(view.currentJob.id, c);
   assert.equal(view.status, "ready");
   assert.deepEqual(view.waitingJobs.map((job) => job.id), [a]);
+});
+
+test("incoming work mirrors upstream queue priority with running work first", () => {
+  const f = factory();
+  const product = f.state.products[0];
+  const printing = f.state.processes.find((process) => process.name === "Printing");
+  const reelMachine = product.route[0].machineId;
+  const printingMachine = product.route[1].machineId;
+  const a = f.create();
+  const b = f.create();
+  const c = f.create();
+  // Invert job-entry order upstream: newest job first, then start it running.
+  f.go({ type: "queue.reorder", machineId: reelMachine, jobIds: [c, b, a] });
+  f.start(c);
+  const incoming = getIncomingWork(f.state, printingMachine);
+  assert.deepEqual(incoming.map((entry) => entry.job.id), [c, b, a]);
+  assert.deepEqual(incoming.map((entry) => entry.upstreamPosition), [1, 2, 3]);
+  assert.deepEqual(getDepartmentView(f.state, printing.id).incoming.map((entry) => entry.job.id), [c, b, a]);
 });
 
 test("different product routes hand off to their own destinations, with explicit Start", () => {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { suggestBoxesPerSheet, formatAreaRatio } from "../domain/index.js";
 import { Dialog, DesignLink, Field, SheetFacts, formatDate } from "../ui/index.jsx";
 
 export function JobForm({ state, job, onCommand, onClose }) {
@@ -12,12 +13,27 @@ export function JobForm({ state, job, onCommand, onClose }) {
     assignments: job ? job.operations.map((operation) => operation.machineId) : product?.route.map((step) => step.machineId ?? "") ?? [],
   }));
   const [error, setError] = useState("");
+  const [yieldTouched, setYieldTouched] = useState(Boolean(job));
   const locked = job && state.events.some((event) => event.jobId === job.id && event.type === "start");
   const patch = (values) => setForm((current) => ({ ...current, ...values }));
+  const suggestion = product ? suggestBoxesPerSheet({ boxesPerStandardSheet: product.boxesPerStandardSheet, sheet: { reelSize: Number(form.sheet.reelSize), cuttingSize: Number(form.sheet.cuttingSize) }, standardSheet: product.standardSheet }) : null;
+  const ratio = product ? formatAreaRatio({ sheet: { reelSize: Number(form.sheet.reelSize), cuttingSize: Number(form.sheet.cuttingSize) }, standardSheet: product.standardSheet }) : null;
+  const enteredYield = Number(form.boxesPerSheet);
+  const showSuggestion = product && !locked && suggestion !== null && Number.isSafeInteger(enteredYield) && enteredYield !== suggestion;
   function changeProduct(id) {
     setProductId(id);
     const selected = state.products.find((item) => item.id === id);
+    setYieldTouched(false);
     patch({ sheet: { ...selected.standardSheet }, boxesPerSheet: selected.boxesPerStandardSheet, assignments: selected.route.map((step) => step.machineId ?? "") });
+  }
+  function changeSheet(values) {
+    const next = { ...form.sheet, ...values };
+    const patchValues = { sheet: next };
+    if (!yieldTouched && product) {
+      const nextSuggestion = suggestBoxesPerSheet({ boxesPerStandardSheet: product.boxesPerStandardSheet, sheet: { reelSize: Number(next.reelSize), cuttingSize: Number(next.cuttingSize) }, standardSheet: product.standardSheet });
+      if (nextSuggestion !== null) patchValues.boxesPerSheet = nextSuggestion;
+    }
+    patch(patchValues);
   }
   function submit(event) {
     event.preventDefault();
@@ -37,10 +53,11 @@ export function JobForm({ state, job, onCommand, onClose }) {
       {locked && <p className="info-note">Production started. Only notes and unstarted assignments can change.</p>}
       <div className="form-grid">
         <Field label="Ordered boxes"><input type="number" min="1" step="1" required disabled={locked} value={form.quantity} onChange={(event) => patch({ quantity: event.target.value })} /></Field>
-        <Field label="Actual boxes per sheet" hint="Entered yield controls the calculation, not the area ratio."><input type="number" min="1" step="1" required disabled={locked} value={form.boxesPerSheet} onChange={(event) => patch({ boxesPerSheet: event.target.value })} /></Field>
-        <Field label="Job reel size"><input type="number" min="0.001" step="any" required disabled={locked} value={form.sheet.reelSize} onChange={(event) => patch({ sheet: { ...form.sheet, reelSize: event.target.value } })} /></Field>
-        <Field label="Job cutting size"><input type="number" min="0.001" step="any" required disabled={locked} value={form.sheet.cuttingSize} onChange={(event) => patch({ sheet: { ...form.sheet, cuttingSize: event.target.value } })} /></Field>
+        <Field label="Actual boxes per sheet" hint="Entered yield controls the calculation — estimates are suggestions only."><input type="number" min="1" step="1" required disabled={locked} value={form.boxesPerSheet} onChange={(event) => { setYieldTouched(true); patch({ boxesPerSheet: event.target.value }); }} /></Field>
+        <Field label="Job reel size"><input type="number" min="0.001" step="any" required disabled={locked} value={form.sheet.reelSize} onChange={(event) => changeSheet({ reelSize: event.target.value })} /></Field>
+        <Field label="Job cutting size"><input type="number" min="0.001" step="any" required disabled={locked} value={form.sheet.cuttingSize} onChange={(event) => changeSheet({ cuttingSize: event.target.value })} /></Field>
       </div>
+      {showSuggestion && <div className="suggestion-nudge" role="status"><span>Suggested {suggestion} boxes per sheet from {ratio} sheet area vs standard.</span><button type="button" className="ghost-button small" onClick={() => { patch({ boxesPerSheet: suggestion }); setYieldTouched(false); }}>Apply suggestion</button></div>}
       <section className="calculation-panel" aria-label="Sheet requirement"><h3>Sheet requirement</h3><SheetFacts job={{ specification: product, quantity: Number(form.quantity), sheet: { reelSize: Number(form.sheet.reelSize), cuttingSize: Number(form.sheet.cuttingSize) }, boxesPerSheet: Number(form.boxesPerSheet) }} /></section>
       <DesignLink attachment={state.attachments.find((item) => item.id === product.designId)} />
       <section className="route-editor" aria-label="Job machine plan"><h3>Machine plan</h3>

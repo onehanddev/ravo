@@ -6,9 +6,9 @@ import { reorderQueue, synchronizeQueues } from "./queues.js";
 import { record, requireValue, validateState } from "./validation.js";
 
 export { createInitialState } from "./seed.js";
-export { calculateSheets } from "./validation.js";
+export { calculateSheets, suggestBoxesPerSheet, areaRatio, formatAreaRatio } from "./validation.js";
 export { validateState } from "./validation.js";
-export { getMachineView, getJobStatus, getIncomingWork } from "./selectors.js";
+export { getMachineView, getDepartmentView, getJobStatus, getIncomingWork } from "./selectors.js";
 export { getUndoReason } from "./corrections.js";
 
 const handlers = {

@@ -55,7 +55,7 @@ Other modules import the domain through its entry point. See [module-contract.md
 1. A job occupies at most one executable machine queue. Its current operation follows its retained route; future operations remain Pending.
 2. A machine queue contains its ready/running head followed by waiting jobs. A running head cannot be displaced. An idle machine receiving work immediately has a Ready job, requiring explicit Start.
 3. Incoming work is a read-only projection of Pending future assignments. It does not reserve executable queue positions or imply an arrival ETA. Reassignment, handoff and Undo automatically change the projection.
-4. Actual boxes per sheet is entered and authoritative. Required sheets rounds upward; the sheet-area multiplier never changes yield.
+4. Actual boxes per sheet is entered and authoritative. Required sheets rounds upward; the sheet-area multiplier never changes yield. Job entry may suggest an area-scaled whole-yield estimate with its ratio shown, but only the entered value is retained.
 5. Jobs retain the product specification and design identity present at creation. Operation assignments can change before Start, without changing product defaults. Recorded completion events retain the process/machine names used at that time.
 6. Production fields remain locked after any recorded Start, including a corrected Start. Notes/references and unstarted assignments can still change. Dispatched jobs are retained history.
 7. Undo is record correction, not physical production reversal. Later Starts on the downstream route or source machine prevent an earlier Complete from being undone, even if that later work was itself completed or corrected. This is deliberately conservative.

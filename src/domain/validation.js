@@ -41,6 +41,37 @@ export function calculateSheets({ quantity, boxesPerSheet, sheet, standardSheet 
   return { requiredSheets, boxCapacity, multiplier };
 }
 
+function finitePositive(value) {
+  const number = typeof value === "string" && value.trim() !== "" ? Number(value) : value;
+  return typeof number === "number" && Number.isFinite(number) && number > 0 ? number : null;
+}
+
+export function areaRatio({ sheet, standardSheet } = {}) {
+  const reel = finitePositive(sheet?.reelSize);
+  const cutting = finitePositive(sheet?.cuttingSize);
+  const standardReel = finitePositive(standardSheet?.reelSize);
+  const standardCutting = finitePositive(standardSheet?.cuttingSize);
+  if (reel === null || cutting === null || standardReel === null || standardCutting === null) return null;
+  const ratio = (reel * cutting) / (standardReel * standardCutting);
+  return Number.isFinite(ratio) && ratio > 0 ? ratio : null;
+}
+
+export function formatAreaRatio({ sheet, standardSheet } = {}) {
+  const ratio = areaRatio({ sheet, standardSheet });
+  return ratio === null ? null : `${Number(ratio.toFixed(2))}×`;
+}
+
+// Best-estimate assist for job entry only: scales the product's standard yield by
+// sheet area and rounds to a whole sheet yield. Never throws; returns null when the
+// sizes are incomplete. The entered value always stays authoritative (see Q26).
+export function suggestBoxesPerSheet({ boxesPerStandardSheet, sheet, standardSheet } = {}) {
+  const standard = finitePositive(boxesPerStandardSheet);
+  const ratio = areaRatio({ sheet, standardSheet });
+  if (standard === null || ratio === null) return null;
+  const suggestion = Math.max(1, Math.round(standard * ratio));
+  return Number.isSafeInteger(suggestion) ? suggestion : null;
+}
+
 export function findById(items, id, label) {
   const item = items.find((entry) => entry.id === id);
   requireValue(item, `${label} was not found. Refresh the selection and try again.`);

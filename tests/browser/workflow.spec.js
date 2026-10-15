@@ -297,3 +297,23 @@ test("incoming planning anticipates upstream jobs and visible undo restores thei
   await expect(page.locator(".incoming-work").getByRole("button", { name: "View JOB-1001", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Start JOB-1001 on Corrugator 2", exact: true })).toHaveCount(0);
 });
+
+test("job sheet scaling suggests yield without overriding entered values", async ({ page }) => {
+  await page.goto("/");
+  await createProduct(page, { name: "Scaling carton", processes: ["Printing", "Corrugation"] });
+  await page.getByRole("button", { name: "New job", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "New job", exact: true });
+  await dialog.getByLabel("Product", { exact: true }).selectOption({ label: "Scaling carton" });
+  // Untouched yield tracks sheet scaling automatically: doubling the reel doubles the area.
+  await dialog.getByLabel("Job reel size", { exact: true }).fill("38");
+  await expect(dialog.getByLabel("Actual boxes per sheet", { exact: true })).toHaveValue("8");
+  // A hand-edited yield is never overwritten; the estimate becomes an apply-able nudge.
+  await dialog.getByLabel("Actual boxes per sheet", { exact: true }).fill("5");
+  await dialog.getByLabel("Job cutting size", { exact: true }).fill("72");
+  const nudge = dialog.getByRole("status");
+  await expect(nudge).toContainText("Suggested 16 boxes per sheet from 4× sheet area");
+  await nudge.getByRole("button", { name: "Apply suggestion", exact: true }).click();
+  await expect(dialog.getByLabel("Actual boxes per sheet", { exact: true })).toHaveValue("16");
+  await expect(dialog.getByText("625", { exact: true })).toBeVisible();
+  await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
+});

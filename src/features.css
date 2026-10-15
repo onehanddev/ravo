@@ -26,6 +26,8 @@ textarea { border: 1px solid var(--border-strong); border-radius: var(--radius-c
 .form-help { color: var(--text-3); display: block; font-size: 0.8rem; font-weight: 400; line-height: 1.5; margin: 6px 0 12px; text-transform: none; }
 .form-error { background: var(--red-bg); border-left: 3px solid var(--red); border-radius: 0 8px 8px 0; color: var(--red); padding: 12px; font-size: 0.85rem; }
 .info-note { background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; color: #1e40af; font-size: 0.85rem; padding: 12px; }
+.suggestion-nudge { align-items: center; background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: 10px; display: flex; flex-wrap: wrap; font-size: 0.85rem; gap: 10px 14px; justify-content: space-between; margin: 0 0 14px; padding: 11px 14px; color: var(--amber); font-weight: 600; }
+.suggestion-nudge .ghost-button { width: auto; }
 .design-link { align-items: center; color: var(--accent); display: inline-flex; gap: 7px; overflow-wrap: anywhere; font-weight: 600; }
 .design-link svg { flex-shrink: 0; }
 .config-grid { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -92,7 +94,7 @@ summary { color: var(--text-2); cursor: pointer; font-size: 0.85rem; font-weight
 .department-picker .form-field { min-width: 220px; }
 .workstation-identity h3 { color: var(--text); font-size: 1.05rem; letter-spacing: -0.01em; }
 .workstation-unit { gap: 22px; grid-template-columns: minmax(120px, 0.8fr) minmax(200px, 1.4fr) minmax(120px, 0.7fr) auto; min-height: 180px; padding: 24px 26px; }
-.workstation-queue-toggle { grid-column: 2 / -1; justify-self: start; }
+.workstation-queue-toggle { grid-column: 1 / -1; justify-self: start; }
 .corrugation-facts { background: var(--surface-3); border: 1px solid var(--border); border-radius: 10px; grid-column: 1 / -1; padding: 16px; }
 .corrugation-facts .sheet-facts { margin-bottom: 0; }
 .dispatch-job { align-items: center; border-top: 1px solid var(--border); display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr) auto auto; padding: 20px 0; }
@@ -105,6 +107,15 @@ summary { color: var(--text-2); cursor: pointer; font-size: 0.85rem; font-weight
 .status.pending, .status.retired { background: var(--slate-bg); border-color: var(--border); color: var(--text-2); }
 .machine-name-button { background: transparent; border: 0; color: var(--accent-hover); font: inherit; font-family: var(--font-mono); font-weight: 600; font-size: 0.92rem; min-height: 40px; padding: 8px 0; text-align: left; }
 .machine-name-button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.dept-tabs { margin: 14px 18px 0; }
+.machine-badge { background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; color: var(--text-2); display: inline-block; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600; margin-top: 6px; padding: 2px 9px; }
+.dept-body { padding: 14px 18px 18px; }
+.dept-body .machine-queue { margin-top: 0; }
+.dept-hint { margin: 0 0 12px; }
+.dept-body .queue-entry small.dept-date { color: var(--text-3); display: block; font-size: 0.78rem; margin-top: 4px; }
+.queue-entry.dept-static { grid-template-columns: 26px minmax(160px, 1fr) 115px; }
+.dept-static .running-marker { align-self: center; justify-self: start; }
+.dept-done-marker { align-self: center; color: var(--green); display: inline-flex; justify-self: start; }
 .incoming-work { background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 10px; margin-top: 20px; padding: 12px 15px; }
 .incoming-work > summary { color: #1e40af; font-size: 0.88rem; font-weight: 600; }
 .incoming-list { display: grid; gap: 8px; }
@@ -148,6 +159,9 @@ summary { color: var(--text-2); cursor: pointer; font-size: 0.85rem; font-weight
   .route-step > strong { font-size: 0.8rem; }
   .route-step .button-row { gap: 4px; }
   .queue-entry { gap: 8px; grid-template-columns: 20px minmax(0, 1fr) auto; }
+  .queue-entry.dept-static { grid-template-columns: 20px minmax(0, 1fr) auto; }
+  .dept-tabs { margin: 12px 12px 0; }
+  .dept-body { padding: 12px; }
   .queue-controls { grid-column: 2 / -1; justify-self: end; }
   .queue-entry .status { font-size: 0.76rem; min-height: 30px; padding: 4px 8px; }
   .dispatch-job { grid-template-columns: 1fr; }

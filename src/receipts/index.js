@@ -1,4 +1,4 @@
-import { calculateSheets } from "../domain/index.js";
+import { calculateSheets, formatAreaRatio } from "../domain/index.js";
 
 const date = (value) => value ? new Date(value).toLocaleString() : "Not recorded";
 const dimensions = (sheet) => `${sheet.reelSize} x ${sheet.cuttingSize}`;
@@ -7,6 +7,7 @@ function receipt(state, jobId) {
   const job = state.jobs.find((entry) => entry.id === jobId);
   if (!job || job.status !== "dispatched") throw new Error("Confirm dispatch before exporting a Production receipt.");
   const calculation = calculateSheets({ ...job, standardSheet: job.specification.standardSheet });
+  const ratio = formatAreaRatio({ sheet: job.sheet, standardSheet: job.specification.standardSheet });
   const rows = [
     ["Job", job.number], ["Product / box name", job.specification.name],
     ["Sales order reference", job.orderReference || "—"], ["Customer", job.customer || "—"],
@@ -15,6 +16,7 @@ function receipt(state, jobId) {
     ["Actual boxes per sheet", String(job.boxesPerSheet)],
     ["Standard sheet (reel x cutting)", dimensions(job.specification.standardSheet)],
     ["Boxes per standard sheet", String(job.specification.boxesPerStandardSheet)],
+    ["Job sheet area vs standard", ratio === null ? "—" : ratio],
     ["Number of colors", String(job.specification.numberOfColors)], ["Special colors", job.specification.specialColors || "None"],
     ["Design PDF", state.attachments.find((item) => item.id === job.specification.designId)?.name || "Not attached"],
     ["Job entered", date(job.createdAt)],
